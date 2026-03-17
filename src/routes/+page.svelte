@@ -10,73 +10,19 @@
   let replaceMode = $state("redact");
 
   const PATTERNS = [
-    {
-      name: "Email",
-      re: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g,
-      fake: () => "user@example.com",
-    },
-    {
-      name: "SSN",
-      re: /\b\d{3}-\d{2}-\d{4}\b/g,
-      fake: () => `${rand(100, 899)}-${rand(10, 99)}-${rand(1000, 9999)}`,
-    },
-    {
-      name: "Credit Card",
-      re: /\b(?:\d[ -]*?){13,19}\b/g,
-      test: (m) => luhnCheck(m.replace(/\D/g, "")),
-      fake: () => "4111 1111 1111 1111",
-    },
-    {
-      name: "Phone",
-      re: /(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}\b/g,
-      fake: () => `(555) ${rand(200, 999)}-${rand(1000, 9999)}`,
-    },
-    {
-      name: "IP Address",
-      re: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g,
-      fake: () =>
-        `${rand(10, 192)}.${rand(0, 255)}.${rand(0, 255)}.${rand(1, 254)}`,
-    },
-    {
-      name: "IPv6",
-      re: /\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b/g,
-      fake: () => "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
-    },
-    {
-      name: "AWS Key",
-      re: /\b(?:AKIA|ABIA|ACCA|ASIA)[0-9A-Z]{16}\b/g,
-      fake: () => "AKIAIOSFODNN7EXAMPLE",
-    },
-    {
-      name: "API Key",
-      re: /\b(?:sk|pk|api|key|token|secret|bearer)[-_]?[a-zA-Z0-9]{20,}/gi,
-      fake: () => "sk_live_EXAMPLE_KEY_REPLACED",
-    },
-    {
-      name: "JWT",
-      re: /\beyJ[a-zA-Z0-9_-]{10,}\.eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}/g,
-      fake: () => "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.EXAMPLE",
-    },
-    {
-      name: "Private Key",
-      re: /-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----[\s\S]*?-----END (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/g,
-      fake: () => "[PRIVATE_KEY_REMOVED]",
-    },
-    {
-      name: "Street Address",
-      re: /\b\d{1,5}\s(?:[A-Z][a-z]+\s){1,3}(?:St|Ave|Blvd|Dr|Ln|Rd|Way|Ct|Pl|Cir|Ter|Pkwy|Hwy)\.?\b/g,
-      fake: () => "123 Example St",
-    },
-    {
-      name: "Zip Code",
-      re: /\b\d{5}(?:-\d{4})?\b/g,
-      fake: () => `${rand(10000, 99999)}`,
-    },
-    {
-      name: "Date of Birth",
-      re: /\b(?:0[1-9]|1[0-2])\/(?:0[1-9]|[12]\d|3[01])\/(?:19|20)\d{2}\b/g,
-      fake: () => "01/01/1990",
-    },
+    { name: "Email", re: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g, fake: () => "user@example.com" },
+    { name: "SSN", re: /\b\d{3}-\d{2}-\d{4}\b/g, fake: () => `${rand(100,899)}-${rand(10,99)}-${rand(1000,9999)}` },
+    { name: "Credit Card", re: /\b(?:\d[ -]*?){13,19}\b/g, test: (m) => luhnCheck(m.replace(/\D/g, "")), fake: () => "4111 1111 1111 1111" },
+    { name: "Phone", re: /(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}\b/g, fake: () => `(555) ${rand(200,999)}-${rand(1000,9999)}` },
+    { name: "IP Address", re: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g, fake: () => `${rand(10,192)}.${rand(0,255)}.${rand(0,255)}.${rand(1,254)}` },
+    { name: "IPv6", re: /\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b/g, fake: () => "2001:0db8:85a3:0000:0000:8a2e:0370:7334" },
+    { name: "AWS Key", re: /\b(?:AKIA|ABIA|ACCA|ASIA)[0-9A-Z]{16}\b/g, fake: () => "AKIAIOSFODNN7EXAMPLE" },
+    { name: "API Key", re: /\b(?:sk|pk|api|key|token|secret|bearer)[-_]?[a-zA-Z0-9]{20,}/gi, fake: () => "sk_live_EXAMPLE_KEY_REPLACED" },
+    { name: "JWT", re: /\beyJ[a-zA-Z0-9_-]{10,}\.eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}/g, fake: () => "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.EXAMPLE" },
+    { name: "Private Key", re: /-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----[\s\S]*?-----END (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/g, fake: () => "[PRIVATE_KEY_REMOVED]" },
+    { name: "Street Address", re: /\b\d{1,5}\s(?:[A-Z][a-z]+\s){1,3}(?:St|Ave|Blvd|Dr|Ln|Rd|Way|Ct|Pl|Cir|Ter|Pkwy|Hwy)\.?\b/g, fake: () => "123 Example St" },
+    { name: "Zip Code", re: /\b\d{5}(?:-\d{4})?\b/g, fake: () => `${rand(10000,99999)}` },
+    { name: "Date of Birth", re: /\b(?:0[1-9]|1[0-2])\/(?:0[1-9]|[12]\d|3[01])\/(?:19|20)\d{2}\b/g, fake: () => "01/01/1990" },
   ];
 
   function rand(min, max) {
@@ -117,7 +63,9 @@
         // Skip if overlapping with existing detection
         const start = match.index;
         const end = start + val.length;
-        const overlaps = found.some((f) => start < f.end && end > f.start);
+        const overlaps = found.some(
+          (f) => start < f.end && end > f.start
+        );
         if (!overlaps) {
           found.push({
             name: pattern.name,
@@ -200,28 +148,14 @@ Error log attached. Can you tell me what's wrong?`;
 
   function getCategoryColor(name) {
     switch (name) {
-      case "Email":
-        return "#9b8fde";
-      case "SSN":
-      case "Credit Card":
-        return "#dc2626";
-      case "Phone":
-        return "#e8628a";
-      case "IP Address":
-      case "IPv6":
-        return "#e8a830";
-      case "AWS Key":
-      case "API Key":
-      case "JWT":
-      case "Private Key":
-        return "#f2714d";
-      case "Street Address":
-      case "Zip Code":
-        return "#6baf8d";
-      case "Date of Birth":
-        return "#f59e6c";
-      default:
-        return "#999";
+      case "Email": return "#9b8fde";
+      case "SSN": case "Credit Card": return "#dc2626";
+      case "Phone": return "#e8628a";
+      case "IP Address": case "IPv6": return "#e8a830";
+      case "AWS Key": case "API Key": case "JWT": case "Private Key": return "#f2714d";
+      case "Street Address": case "Zip Code": return "#6baf8d";
+      case "Date of Birth": return "#f59e6c";
+      default: return "#999";
     }
   }
 
@@ -234,10 +168,10 @@ Error log attached. Can you tell me what's wrong?`;
   }
 
   let criticalCount = $derived(
-    detections.filter((d) => getSeverity(d.name) === "critical").length,
+    detections.filter((d) => getSeverity(d.name) === "critical").length
   );
   let highCount = $derived(
-    detections.filter((d) => getSeverity(d.name) === "high").length,
+    detections.filter((d) => getSeverity(d.name) === "high").length
   );
 
   // Build highlighted HTML for the preview
@@ -312,19 +246,13 @@ Error log attached. Can you tell me what's wrong?`;
       <button
         class="btn btn-mode"
         class:btn-active={replaceMode === "redact"}
-        onclick={() => {
-          replaceMode = "redact";
-          handleModeChange();
-        }}>[REDACT]</button
-      >
+        onclick={() => { replaceMode = "redact"; handleModeChange(); }}
+      >[REDACT]</button>
       <button
         class="btn btn-mode"
         class:btn-active={replaceMode === "fake"}
-        onclick={() => {
-          replaceMode = "fake";
-          handleModeChange();
-        }}>Fake data</button
-      >
+        onclick={() => { replaceMode = "fake"; handleModeChange(); }}
+      >Fake data</button>
     </div>
 
     <div class="spacer"></div>
@@ -365,8 +293,7 @@ Error log attached. Can you tell me what's wrong?`;
               class:badge-critical={getSeverity(d.name) === "critical"}
               class:badge-high={getSeverity(d.name) === "high"}
               class:badge-medium={getSeverity(d.name) === "medium"}
-              >{d.name}</span
-            >
+            >{d.name}</span>
             <span class="detection-value">{d.value}</span>
             <span class="detection-arrow">→</span>
             <span class="detection-replaced">
